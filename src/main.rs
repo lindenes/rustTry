@@ -6,6 +6,7 @@ use hyper_util::rt::TokioIo;
 use tokio::net::TcpListener;
 
 use rustTry::application::route::{get_routes};
+use rustTry::configuration::AppConfig;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let addr = SocketAddr::from(([127, 0, 0, 1], 9080));
@@ -27,6 +28,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             if let Err(err) = http1::Builder::new()
                 // `service_fn` converts our function in a `Service`
                 .serve_connection(io, service_fn(get_routes))
+                .with_upgrades()
                 .await
             {
                 eprintln!("Error serving connection: {:?}", err);
